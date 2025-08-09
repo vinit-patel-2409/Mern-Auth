@@ -33,7 +33,8 @@ const corsOptions = {
       'https://mern-auth-vinit-patel-2409s-projects.vercel.app',
       'https://mern-auth.vercel.app',
       'https://mernauthbyvp.vercel.app',  // Production frontend
-      'https://mern-auth-pcxo.onrender.com'  // Production backend
+      'https://your-frontend-url.vercel.app', // YOUR NEW VERCEL URL
+      'https://mern-auth-tl40.onrender.com'  // Production backend
     ];
 
     // Allow requests with no origin (like mobile apps or curl requests)
