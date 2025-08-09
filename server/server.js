@@ -28,6 +28,10 @@ const corsOptions = {
     
     // In production, only allow specific origins
     const allowedOrigins = [
+      'https://mern-auth-orpin-mu.vercel.app',
+      'https://mern-auth-git-main-vinit-patel-2409s-projects.vercel.app',
+      'https://mern-auth-vinit-patel-2409s-projects.vercel.app',
+      'https://mern-auth.vercel.app',
       'https://mernauthbyvp.vercel.app',  // Production frontend
       'https://mern-auth-pcxo.onrender.com'  // Production backend
     ];
