@@ -5,15 +5,12 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   css: {
-    postcss: './postcss.config.cjs',
-    modules: {
-      localsConvention: 'camelCaseOnly',
+    postcss: {
+      plugins: [
+        require('tailwindcss'),
+        require('autoprefixer'),
+      ],
     },
-    preprocessorOptions: {
-      scss: {
-        additionalData: `@import "@/styles/variables.scss";`
-      }
-    }
   },
   resolve: {
     alias: {
