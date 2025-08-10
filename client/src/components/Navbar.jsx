@@ -68,7 +68,7 @@ const Navbar = () => {
   console.log('Navbar - userData:', userData);
 
   return (
-    <div className='w-full flex justify-between items-center p-4 sm:p-6 sm:px-24 absolute top-0 z-50'>
+    <div className='w-full flex justify-between items-center py-4 px-6 sm:px-24 absolute top-0 z-50 bg-white/10 backdrop-blur-md'>
       <img 
         src={assets.logo} 
         alt="" 
@@ -80,7 +80,7 @@ const Navbar = () => {
         <div className='relative' ref={dropdownRef}>
           <button 
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className='flex items-center justify-center w-10 h-10 border border-gray-500 rounded-full text-gray-800 hover:bg-gray-100 transition-all duration-300 cursor-pointer focus:outline-none'
+            className='flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-500 to-blue-500 text-white rounded-full font-semibold hover:from-indigo-600 hover:to-blue-600 transition-all duration-300 cursor-pointer focus:outline-none ring-2 ring-white/50 hover:ring-white'
             aria-haspopup="true"
             aria-expanded={isDropdownOpen}
           >
@@ -88,36 +88,35 @@ const Navbar = () => {
           </button>
           
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-50">
-              <div className='py-1'>
-                <div className='px-4 py-2 text-sm text-gray-700 border-b border-gray-100'>
-                  {userData.email}
+            <div className="absolute right-0 mt-3 w-64 bg-white/90 backdrop-blur-xl rounded-lg shadow-2xl z-50 border border-gray-200/50 overflow-hidden">
+              <div className='py-2'>
+                <div className='px-4 py-3 border-b border-gray-200/80'>
+                  <p className='text-sm font-semibold text-gray-800'>Signed in as</p>
+                  <p className='text-sm text-gray-600 truncate'>{userData.email}</p>
                 </div>
                 
-                <div className="border-t border-gray-100">
-                  {console.log('isAccountVerified:', userData.isAccountVerified, 'Type:', typeof userData.isAccountVerified)}
+                <div className="py-1">
                   {userData.isAccountVerified === false && (
                     <button 
                       onClick={() => {
                         sendVerificationOtp();
                         setIsDropdownOpen(false);
                       }}
-                      className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 whitespace-nowrap'
+                      className='flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 whitespace-nowrap transition-colors duration-200'
                     >
                       Verify Email
                     </button>
                   )}
+                  <button 
+                    onClick={() => {
+                      handleLogout();
+                      setIsDropdownOpen(false);
+                    }}
+                    className='flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors duration-200'
+                  >
+                    Logout
+                  </button>
                 </div>
-                
-                <button 
-                  onClick={() => {
-                    handleLogout();
-                    setIsDropdownOpen(false);
-                  }}
-                  className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                >
-                  Logout
-                </button>
               </div>
             </div>
           )}
@@ -125,7 +124,7 @@ const Navbar = () => {
       ) : (
         <button 
           onClick={() => navigate("/login")} 
-          className='flex items-center gap-2 border border-gray-500 rounded-full px-6 py-2 text-gray-800 hover:bg-gray-100 transition-all duration-300'
+          className='flex items-center gap-2 bg-gradient-to-br from-indigo-500 to-blue-500 text-white rounded-full px-6 py-2 font-semibold hover:from-indigo-600 hover:to-blue-600 transition-all duration-300 shadow-md hover:shadow-lg'
         >
           Login <img src={assets.arrow_icon} alt="" className='w-4 h-4'/>
         </button>

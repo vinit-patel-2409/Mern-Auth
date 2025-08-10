@@ -76,7 +76,7 @@ const EmailVerify = () => {
     isLoggedin && userData && userData.isAccountVerified && navigate("/");
   }, [isLoggedin, userData]);
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-green-400">
+    <div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-50 to-indigo-100">
       <img
         onClick={() => navigate("/")}
         src={assets.logo}
@@ -85,26 +85,26 @@ const EmailVerify = () => {
       />
       <form
         onSubmit={onSubmitHandler}
-        className="bg-slate-900 p-8 rounded-md shadow-lg w-96 text-sm"
+        className="bg-slate-900 p-10 rounded-lg shadow-2xl shadow-indigo-200 w-full sm:w-auto text-sm"
       >
         <h2 className="text-3xl font-semibold text-white text-center mb-3">
-          Verify Email
+          Verify Your Email
         </h2>
-        <p className="text-center text-gray-400 text-sm mb-6">
-          Enter the verification code sent to your email
+        <p className="text-center text-indigo-300 text-sm mb-8">
+          Enter the 6-digit code sent to your email address.
         </p>
         <div
-          className="flex justify-between mb-8"
+          className="flex justify-center gap-3 mb-8"
           onPaste={(e) => handlePaste(e, 0)}
         >
           {Array(6)
             .fill(0)
             .map((_, index) => (
               <input
-                type="number"
-                pattern="\d*"
-                inputMode="numeric"
-                className="w-12 h-12 border border-gray-500 text-xl rounded-md text-center text-white hover:bg-gray-100 hover:text-black transition-all duration-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                key={index}
+                type="text"
+                maxLength="1"
+                className="w-12 h-14 bg-[#333A5C] border-2 border-transparent focus:border-indigo-500 text-2xl rounded-lg text-center text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 ref={(e) => (inputRef.current[index] = e)}
                 onInput={(e) => handleinput(e, index)}
                 onKeyDown={(e) => handleKeydown(e, index)}
@@ -114,9 +114,9 @@ const EmailVerify = () => {
         </div>
         <button
           type="submit"
-          className="w-full py-2.5 rounded-md bg-gradient-to-br from-indigo-500 to-indigo-900 text-white font-medium hover:bg-indigo-600 transition-all duration-300"
+          className="w-full py-2.5 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-800 text-white font-medium transition-all duration-300 hover:from-indigo-600 hover:to-indigo-800 hover:shadow-lg hover:shadow-indigo-500/50"
         >
-          Verify Email
+          Verify Account
         </button>
       </form>
     </div>

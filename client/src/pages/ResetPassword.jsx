@@ -82,150 +82,124 @@ const ResetPassword = () => {
     }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-green-400">
-    <img onClick={()=> navigate("/")} src={assets.logo} alt="" className="absolute left-5 sm:left-20 top-5 w-28 sm:w-32 cursor-pointer"/>
-    {!isEmailSent &&  
-    <form onSubmit={onSubmitEmail} className='bg-slate-900 p-8 rounded-md shadow-lg w-96 text-sm'>
-      <h1 className='text-white text-2xl font-semibold text-center mb-4'>
-        Reset Password
-      </h1>
-      <p className='text-center text-indigo-300 mb-6'>
-        Enter your registered email address
-      </p>
-      <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]' >
-        <img src={assets.mail_icon} alt="" />
-        <input type="email" placeholder='Email' className='bg-transparent outline-none text-white' value={email} onChange={e => setEmail(e.target.value)} required />
-      </div>
-      <button type='submit' className='w-full py-2.5 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-900 text-white font-medium hover:bg-indigo-600 transition-all duration-300'>
-        Submit
-      </button>
+    <div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-50 to-indigo-100">
+      <img onClick={()=> navigate("/")} src={assets.logo} alt="" className="absolute left-5 sm:left-20 top-5 w-28 sm:w-32 cursor-pointer"/>
+      
+      {/* Email Form */}
+      {!isEmailSent &&  
+        <form onSubmit={onSubmitEmail} className='bg-slate-900 p-10 rounded-lg shadow-2xl shadow-indigo-200 w-full sm:w-96 text-sm'>
+          <h1 className='text-white text-3xl font-semibold text-center mb-3'>
+            Reset Password
+          </h1>
+          <p className='text-center text-indigo-300 mb-8'>
+            Enter your registered email to receive a verification code.
+          </p>
+          <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C] transition-all duration-300 focus-within:ring-2 focus-within:ring-indigo-500' >
+            <img src={assets.mail_icon} alt="" />
+            <input type="email" placeholder='Email Address' className='bg-transparent outline-none text-white w-full' value={email} onChange={e => setEmail(e.target.value)} required />
+          </div>
+          <button type='submit' className='w-full mt-4 py-2.5 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-800 text-white font-medium transition-all duration-300 hover:from-indigo-600 hover:to-indigo-800 hover:shadow-lg hover:shadow-indigo-500/50'>
+            Send Code
+          </button>
+        </form>
+      } 
 
-    </form>
-} 
-    {/* otp input form */}
-{!isOtpSubmitted && isEmailSent && 
-    <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          try {
-            const otpValue = Array(6).fill(0).map((_, i) => 
-              inputRef.current[i]?.value || ''
-            ).join('');
-            
-            if (otpValue.length !== 6) {
-              toast.error('Please enter a valid 6-digit OTP');
+      {/* OTP Input Form */}
+      {!isOtpSubmitted && isEmailSent && 
+        <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const otpValue = Array(6).fill(0).map((_, i) => inputRef.current[i]?.value || '').join('');
+              if (otpValue.length !== 6) {
+                toast.error('Please enter the 6-digit OTP');
+                return;
+              }
+              try {
+                const { data } = await axios.post(`${backendUrl}/api/auth/verify-reset-otp`, { email: email.trim(), otp: otpValue });
+                if (data.success) {
+                  toast.success('OTP verified successfully');
+                  setIsOtpSubmitted(true);
+                  setOtp(otpValue);
+                } else {
+                  toast.error(data.message || 'Invalid OTP');
+                }
+              } catch (error) {
+                console.error('OTP verification error:', error);
+                toast.error(error.response?.data?.message || 'Error verifying OTP');
+              }
+            }}
+            className="bg-slate-900 p-10 rounded-lg shadow-2xl shadow-indigo-200 w-full sm:w-auto text-sm"
+          >
+            <h2 className="text-3xl font-semibold text-white text-center mb-3">
+              Enter Verification Code
+            </h2>
+            <p className="text-center text-indigo-300 text-sm mb-8">
+              Enter the 6-digit code sent to {email}.
+            </p>
+            <div className="flex justify-center gap-3 mb-8" onPaste={(e) => handlePaste(e, 0)}>
+              {Array(6).fill(0).map((_, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    maxLength="1"
+                    className="w-12 h-14 bg-[#333A5C] border-2 border-transparent focus:border-indigo-500 text-2xl rounded-lg text-center text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    ref={(e) => (inputRef.current[index] = e)}
+                    onInput={(e) => handleinput(e, index)}
+                    onKeyDown={(e) => handleKeydown(e, index)}
+                    onPaste={(e) => handlePaste(e, index)}
+                  />
+                ))}
+            </div>
+            <button type="submit" className="w-full py-2.5 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-800 text-white font-medium transition-all duration-300 hover:from-indigo-600 hover:to-indigo-800 hover:shadow-lg hover:shadow-indigo-500/50">
+              Verify OTP
+            </button>
+        </form>
+      }
+        
+      {/* New Password Form */}
+      {isOtpSubmitted && isEmailSent && 
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            if (!newPassword) {
+              toast.error('Please enter a new password');
               return;
             }
-            
-            const { data } = await axios.post(`${backendUrl}/api/auth/verify-reset-otp`, {
-              email: email.trim(),
-              otp: otpValue
-            });
-            
-            if (data.success) {
-              toast.success('OTP verified successfully');
-              setIsOtpSubmitted(true);
-              setOtp(otpValue);
-            } else {
-              toast.error(data.message || 'Invalid OTP');
+            try {
+              const otpValue = otp || Array(6).fill(0).map((_, i) => inputRef.current[i]?.value || '').join('');
+              const { data } = await axios.post(`${backendUrl}/api/auth/reset-password`, { email: email.trim(), otp: otpValue, password: newPassword });
+              if (data.success) {
+                toast.success('Password reset successfully');
+                setEmail('');
+                setNewPassword('');
+                setOtp('');
+                setIsEmailSent(false);
+                setIsOtpSubmitted(false);
+                navigate('/login');
+              } else {
+                toast.error(data.message || 'Failed to reset password');
+              }
+            } catch (error) {
+              console.error('Password reset error:', error);
+              toast.error(error.response?.data?.message || 'Error resetting password');
             }
-          } catch (error) {
-            console.error('OTP verification error:', error);
-            toast.error(error.response?.data?.message || 'Error verifying OTP');
-          }
-        }}
-        className="bg-slate-900 p-8 rounded-md shadow-lg w-96 text-sm"
-      >
-        <h2 className="text-3xl font-semibold text-white text-center mb-3">
-          Reset Password OTP
-        </h2>
-        <p className="text-center text-gray-400 text-sm mb-6">
-          Enter the verification code sent to your email
-        </p>
-        <div
-          className="flex justify-between mb-8"
-          onPaste={(e) => handlePaste(e, 0)}
-        >
-          {Array(6)
-            .fill(0)
-            .map((_, index) => (
-              <input
-                key={`otp-input-${index}`}
-                type="number"
-                pattern="\d*"
-                inputMode="numeric"
-                className="w-12 h-12 border border-gray-500 text-xl rounded-md text-center text-white hover:bg-gray-100 hover:text-black transition-all duration-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                ref={(e) => (inputRef.current[index] = e)}
-                onInput={(e) => handleinput(e, index)}
-                onKeyDown={(e) => handleKeydown(e, index)}
-                onPaste={(e) => handlePaste(e, index)}
-              />
-            ))}
-        </div>
-        <button
-          type="submit"
-          className="w-full py-2.5 rounded-md bg-gradient-to-br from-indigo-500 to-indigo-900 text-white font-medium hover:bg-indigo-600 transition-all duration-300"
-        >
-          Verify OTP
-        </button>
-      </form>
-    
-}
-    
-{isOtpSubmitted && isEmailSent && 
-      <form onSubmit={async (e) => {
-        e.preventDefault();
-        if (!newPassword) {
-          toast.error('Please enter a new password');
-          return;
-        }
-        
-        try {
-          const otpValue = otp || Array(6).fill(0).map((_, i) => 
-            inputRef.current[i]?.value || ''
-          ).join('');
-          
-          const { data } = await axios.post(`${backendUrl}/api/auth/reset-password`, {
-            email: email.trim(),
-            otp: otpValue,
-            password: newPassword
-          });
-          
-          if (data.success) {
-            toast.success('Password reset successfully');
-            // Reset all states
-            setEmail('');
-            setNewPassword('');
-            setOtp('');
-            setIsEmailSent(false);
-            setIsOtpSubmitted(false);
-            navigate('/login');
-          } else {
-            toast.error(data.message || 'Failed to reset password');
-          }
-        } catch (error) {
-          console.error('Password reset error:', error);
-          toast.error(error.response?.data?.message || 'Error resetting password');
-        }
-      }} className='bg-slate-900 p-8 rounded-md shadow-lg w-96 text-sm'>
-      <h1 className='text-white text-2xl font-semibold text-center mb-4'>
-        New Password
-      </h1>
-      <p className='text-center text-indigo-300 mb-6'>
-        Enter your new password
-      </p>
-      <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]' >
-        <img src={assets.lock_icon} alt="" />
-        <input type="password" placeholder='New Password' className='bg-transparent outline-none text-white' value={newPassword} onChange={e => setNewPassword(e.target.value)} required />
-      </div>
-      <button type='submit' className='w-full py-2.5 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-900 text-white font-medium hover:bg-indigo-600 transition-all duration-300'>
-        Submit
-      </button>
-
-    </form>
-}
+          }} className='bg-slate-900 p-10 rounded-lg shadow-2xl shadow-indigo-200 w-full sm:w-96 text-sm'>
+          <h1 className='text-white text-3xl font-semibold text-center mb-3'>
+            Set New Password
+          </h1>
+          <p className='text-center text-indigo-300 mb-8'>
+            Create a new, secure password for your account.
+          </p>
+          <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C] transition-all duration-300 focus-within:ring-2 focus-within:ring-indigo-500' >
+            <img src={assets.lock_icon} alt="" />
+            <input type="password" placeholder='New Password' className='bg-transparent outline-none text-white w-full' value={newPassword} onChange={e => setNewPassword(e.target.value)} required />
+          </div>
+          <button type='submit' className='w-full mt-4 py-2.5 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-800 text-white font-medium transition-all duration-300 hover:from-indigo-600 hover:to-indigo-800 hover:shadow-lg hover:shadow-indigo-500/50'>
+            Reset Password
+          </button>
+        </form>
+      }
     </div>
-  )
+  );
 }
 
 export default ResetPassword
